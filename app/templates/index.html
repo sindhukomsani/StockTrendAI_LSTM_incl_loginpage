@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StockTrendAI — AdaniPorts Prediction</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="nav-title">📊 StockTrendAI</div>
+      <div class="nav-right">
+        <a href="/" class="nav-btn">Home</a>
+        <a href="/about" class="nav-btn">About</a>
+        <a href="/contact" class="nav-btn">Contact</a>
+
+        <!-- ✅ Added Login & Register -->
+        <a href="/login" class="nav-btn">Login</a>
+        <a href="/register" class="nav-btn">Register</a>
+      </div>
+    </nav>
+
+    <!-- Main Section -->
+    <div class="container">
+      <div class="header-section">
+        <h1>AdaniPorts Stock Prediction Dashboard</h1>
+        <p class="subtitle">Predict the next closing prices using LSTM Model</p>
+      </div>
+
+      <!-- Prediction Form -->
+      <form method="post" action="/predict" class="form-box">
+        <label for="days">📅 Predict next (days):</label>
+        <input
+          type="number"
+          id="days"
+          name="days"
+          value="{{ days }}"
+          min="1"
+          max="60"
+          required
+        />
+        <button type="submit" class="predict-btn">Predict</button>
+      </form>
+
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
+
+      {% if preds %}
+      <div class="results-card">
+        <h2>📈 Predicted Close Prices</h2>
+        <table>
+          <tr>
+            <th>Date</th>
+            <th>Predicted Close</th>
+          </tr>
+          {% for d, p in preds %}
+          <tr>
+            <td>{{ d }}</td>
+            <td>₹{{ p }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+
+      <!-- Charts -->
+      <div class="chart-section">
+        <h3>Historical vs Predicted (Line Chart)</h3>
+        <canvas id="lineChart"></canvas>
+
+        <h3>Predicted Close Prices (Bar Chart)</h3>
+        <canvas id="barChart"></canvas>
+
+        <h3>Predicted Growth Trend (Area Chart)</h3>
+        <canvas id="areaChart"></canvas>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if history %}
+    <script>
+      const history = {{ history | tojson }};
+      const preds = {{ preds | tojson }};
+
+      const histDates = history.map((r) => r.date);
+      const histPrices = history.map((r) => r.close);
+      const predDates = preds.map((p) => p[0]);
+      const predPrices = preds.map((p) => p[1]);
+
+      // Line Chart
+      new Chart(document.getElementById("lineChart"), {
+        type: "line",
+        data: {
+          labels: [...histDates, ...predDates],
+          datasets: [
+            {
+              label: "History",
+              data: [...histPrices, ...Array(predPrices.length).fill(null)],
+              borderColor: "#2563eb",
+              fill: false,
+              tension: 0.3,
+            },
+            {
+              label: "Predicted",
+              data: [...Array(histPrices.length).fill(null), ...predPrices],
+              borderColor: "#22c55e",
+              borderDash: [5, 5],
+              fill: false,
+              tension: 0.3,
+            },
+          ],
+        },
+      });
+
+      // Bar Chart
+      new Chart(document.getElementById("barChart"), {
+        type: "bar",
+        data: {
+          labels: predDates,
+          datasets: [
+            {
+              label: "Predicted Close (₹)",
+              data: predPrices,
+              backgroundColor: "#38bdf8",
+            },
+          ],
+        },
+      });
+
+      // Area Chart
+      new Chart(document.getElementById("areaChart"), {
+        type: "line",
+        data: {
+          labels: predDates,
+          datasets: [
+            {
+              label: "Cumulative Growth",
+              data: predPrices.map((v, i) =>
+                predPrices.slice(0, i + 1).reduce((a, b) => a + b, 0)
+              ),
+              fill: true,
+              backgroundColor: "rgba(59, 130, 246, 0.3)",
+              borderColor: "#3b82f6",
+              tension: 0.4,
+            },
+          ],
+        },
+      });
+    </script>
+    {% endif %}
+  </body>
+</html>

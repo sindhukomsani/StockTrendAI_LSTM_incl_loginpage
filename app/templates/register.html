@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register — StockTrendAI</title>
+
+    <style>
+        body {
+            background:#f5f7fb;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            margin:0;
+            font-family:"Segoe UI",sans-serif;
+        }
+
+        .auth-box {
+            width:360px;
+            background:white;
+            padding:30px;
+            border-radius:12px;
+            box-shadow:0 4px 14px rgba(0,0,0,0.1);
+            text-align:center;
+        }
+
+        .project-title {
+            font-size:26px;
+            font-weight:700;
+            color:#1e293b;
+        }
+
+        .project-sub {
+            margin-top:-5px;
+            font-size:13px;
+            color:#64748b;
+            margin-bottom:20px;
+        }
+
+        .auth-input {
+            width:100%;
+            padding:10px;
+            border-radius:8px;
+            border:1px solid #cbd5e1;
+            margin-bottom:12px;
+            font-size:14px;
+        }
+
+        .auth-btn {
+            width:100%;
+            padding:10px;
+            background:#10b981;
+            color:white;
+            border:none;
+            border-radius:8px;
+            font-size:15px;
+            cursor:pointer;
+            transition:0.2s;
+        }
+
+        .auth-btn:hover {
+            background:#0d8f68;
+        }
+
+        .auth-link {
+            margin-top:10px;
+            display:block;
+            color:#2563eb;
+            text-decoration:none;
+            font-size:14px;
+        }
+
+        .error {
+            background:#fee2e2;
+            color:#b91c1c;
+            padding:8px;
+            border-radius:6px;
+            font-size:14px;
+            margin-bottom:10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-box">
+        
+        <div class="project-title">📊 StockTrendAI</div>
+        <div class="project-sub">AdaniPorts Stock Prediction System</div>
+
+        <h3 style="margin-bottom:15px; color:#1e293b;">Create Account</h3>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form action="/register" method="post">
+
+            <input type="text" name="name" placeholder="Full Name" class="auth-input" required>
+            <input type="email" name="email" placeholder="Email" class="auth-input" required>
+            <input type="password" name="password" placeholder="Password" class="auth-input" required>
+
+            <button type="submit" class="auth-btn">Register</button>
+        </form>
+
+        <a href="/login" class="auth-link">Already have an account? Login</a>
+    </div>
+
+</body>
+</html>
